@@ -6,6 +6,8 @@ AGE_MAP = [
     # above 60 is seniors
 ]
 
+# This mapping of letters to numeric descriptor assumes that cabins lettered past G are also zero
+# and this is reflected in the code in data2vec
 CABIN_MAP = {
     'G':0,
     'F':1,
@@ -20,6 +22,8 @@ def data2vec(object):
     """
         This function will return a numpy vector of values in the following order:
             [Pclass, Sex, Age, Horizontal_family, Vertical_family, Cabin]
+
+        for this version of the neural network we gather only discrete classification information.
     """
 
     data = []

@@ -1,9 +1,20 @@
+"""
+    This file holds the classes that will hold our data. Normally I would implement a repository for holding
+    cross-validation data as well, but since the data we have is limited in this case, we leave it out and instead
+    assume (hope) that variance in the correlation of the discrete features and survival is low.
+
+    Note that in real world practice the use of cross-validation is not required, but it is extremely useful in
+    diagnoses of neural net behavior.
+"""
+
 from modeling import *
 import numpy as np
 import random
 
-
 class TrainingRepo(object):
+    """
+        TrainingRepo will hold our training info and will let us grab new batches as needed
+    """
     def __init__(self, csv_file):
 
         if isinstance(csf_file):
