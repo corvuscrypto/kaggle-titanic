@@ -3,6 +3,96 @@
     This neural net will be very basic and we will utilize a linear activation unit and a mean squared error cost
     function.
 
+    MODEL REPRESENTATION
+
+    In a neural network, we typically organize our neurons into layers. The more layers we have, the more complex our
+    model representation becomes mathematically. However, no matter what, in a neural network we will need a minimum of
+    two layers! one for input, and one for output. Any layers between are known colloquially as "hidden" layers.
+
+    Cool, so starting with the input layer, what does a typical input layer look like? Well it depends on our input.
+    If we took only one input example we would typically see a vector of features. Features in this case are just
+    representations of your data that can be used in numeric computation. This means that for some data (like the
+    titanic data set) we may need to do some transformation if it is not already in numeric format. E.g. the male/female
+    classification given to us by kaggle can be represented as 0 for male and 1 for female. The information conveyed is
+    the same, but in the latter representation we can use maths on it! For these input vectors, we can imagine it as
+    each vector component being a neuron itself in the network. Thus, if we have an input of 6 features, our network's
+    first layer looks like:
+
+        O
+        O
+        O
+        O
+        O
+        O
+
+    Now let's move to the output layer. The output layer can be thought of in two regards: classification and regression.
+    an example of a binary classification output could be numbers (like in the classic MNIST tutorials). We can have a
+    neuron for each single digit number. This would connect directly to our input layer very easily. For the following,
+    assume that every neuron in the previous layer connects to every neuron in the next.
+
+            O
+            O
+        O   O
+        O   O
+        O   O
+        O   O
+        O   O
+        O   O
+            O
+            O
+
+    We could also represent a classification of the numbers based on their binary representation (we need 4 neurons to
+    represent the 4 bits needed for 10 digits)
+
+        O
+        O   O
+        O   O
+        O   O
+        O   O
+        O
+
+    For both of these
+
+    If we instead were performing regression we could think of the output layer as having a neuron for each predicted
+    value we want. Here is an example in which we predict 2 values
+
+        O
+        O
+        O   O
+        O   O
+        O
+        O
+
+    We could also just predict one value
+
+        O
+        O
+        O
+        O   O
+        O
+        O
+
+    However these representations are pretty boring with nothing between the two layers. Let's spice things up and add
+    a hidden layer with 5 units.
+
+        O
+        O   O
+        O   O
+        O   O   O
+        O   O
+        O   O
+
+    What does that do? Well it lets us analyze our data using non-linear boundaries. In layman's speak, if we had data
+    plotted on a graph we could only separate it using a straight line if using only the input and output layers, while
+    the addition of the hidden layer lets us separate using a curved continuous boundary. What happens then if we add
+    another?
+
+    Intuitively it would seem that we could get better accuracy this way. Indeed, some data is analyzed very well with
+    this extra layer, however for many data sets, analysis is best left to a single layer because as you abstract
+    the model into higher dimensions, the possible boundaries increases and you risk getting non-optimal behavior due
+    to its ability to find discontinuous solution sets. This is math speak for "using a single hidden layer is usually
+    good enough."
+
     This means that for our neural net, the cost against which we adjust our parameters will be in the form:
 
         MEAN SQUARED ERROR
@@ -156,6 +246,26 @@
     Note that in modern machine learning frameworks (as we'll see later) usually there are optimizers that handle this
     choice of alpha for you and can even do dynamic adjustments to alpha during training!
 
-    
+    Now that we know how things work in a single neuron, we need to switch back into the mindset of neural networks!
+    In the previous examples for the neural network, we had our weights and inputs organized so that the bias term was
+    included in the weights vector and a column of ones was introduced into the input.
 
+    This means that our partial differential equations for bias and weight can also be combined like the linear
+    activation function as such:
+
+        partial_derivative_w = SUM(x * ((x * w) - y))/N
+        w = w - alpha * partial_derivative_w
+
+    This certainly cleans things up. However a thought occurs... in a multi-layer neural network, our activations of
+    each subsequent layer, from the first hidden layer to the output layer, depend on each other. If I have a neural
+    network with 5 input features,
+
+    This is pretty much all you need to know for writing the neuron activation and gradient descent. Let's get to the
+    code then! I will comment many parts of the code for convenience :)
+
+"""
+
+"""
+    We will implement the neuron as a class that takes a cost function and  as a parameter. This is so we can easily
+    exchange the
 """
