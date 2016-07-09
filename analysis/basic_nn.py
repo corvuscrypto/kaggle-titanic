@@ -6,12 +6,17 @@
     This means that for our neural net, the cost against which we adjust our parameters will be in the form:
 
         MEAN SQUARED ERROR
-            SUM((x * w) - y) ^ 2)/N
+            SUM((x * w) - y) ^ 2)/2N
 
             w = weights
             x = features
             y = result
             N = number of inputs
+
+    (First let me address why we have it divided by 2N and not just N. This is because later on we will look at how to
+    use gradient descent to update our parameters for w. When we do this, this 1/2 will go away and leave a cleaner
+    equation for us. It doesn't affect the goal we have regardless of whether it is /2N or /N
+    or even /100N.)
 
     Note that normally a linear function has the form w * x + b for scalar w and b. However, because the neural net
     will be utilizing vectors for w and b, we can get clever and rewrite this to x * w and add a column to both x and w
@@ -76,7 +81,7 @@
     such a high-dimensional plot. However, lets just work with only a single weight and bias unit for this part. The
     cost function now becomes:
 
-        SUM((((w * x) + b) - y) ^ 2)/N
+        SUM((((w * x) + b) - y) ^ 2)/2N
 
     We can fairly easily represent this function using a 3D graph. I'm going to be shameless and give you a link to use
     for this: https://upload.wikimedia.org/wikipedia/commons/6/6d/Error_surface_of_a_linear_neuron_with_two_input_weights.png
@@ -90,7 +95,67 @@
     by another set of equations related to the variables w and b. We will then use this instantaneous momentum to update
     the ball's position manually. This certainly sounds like a job for derivatives for instantaneous rate of change :).
 
-    
+    To get the equation for gradient descent on both variables, we need the derivative of the cost function with respect
+    to each variable. If you aren't familiar with partial differentiation, don't worry, it's pretty easy.
 
+    For the first variable, w, we pretend b is a constant when differentiating (I will assume you know how to
+    differentiate using the chain rule):
+
+        partial_derivative_w = SUM(x * (((x * w) + b) - y))/N
+
+    Because we divided the cost function by 2 we get a nice clean equation when we derivate :). Now the bias b:
+
+        partial_derivative_b = SUM(((x * w) + b) - y)/N
+
+    Before we update our parameters, lets look at the intuition behind these partial derivatives. When we have a high
+    positive error with respect to a parameter (y << ((x * w) + b)) it means that one or both of our parameters is
+    too high. In this case we want to use the instantaneous rate of change (ROC) as given by the partial derivative to lower
+    the value of the appropriate parameters. If we have a large negative error (y >> ((x * w) + b)) then we want to
+    use the ROC given by the partial derivatives to increase the appropriate parameter. If we have zero error, then
+    our derivatives will be zero and we do nothing. We can get this behavior by using a single algorithm:
+
+        w = w - partial_derivative_w
+        b = b - partial_derivative_b
+
+    By subtracting the partial derivative, we will ensure that we always increase a parameter if it is too low and
+    vice versa. For zero values, the assignments reduce to w = w and b = b.
+
+        Note: Because the partial_derivative_* equations depend on the w and b, the code would actually become
+
+            pd_w = SUM(x * (((x * w) + b) - y))/N
+            pd_b = SUM(((x * w) + b) - y)/N
+
+            w = w - pd_w
+            b = b - pd_b
+
+        always perform a simultaneous update when doing gradient descent. If you update by calculating inline for each
+        parameter you will skew each subsequent parameter's update which will prevent your parameters from converging
+        at minimum-error values.
+
+    Now that we have that settled, we need to address a hypothetical issue (one that turns out to be a real practical
+    problem). Suppose we run our gradient descent algorithm and we have a large adjustment we need to make to our
+    parameters. When we make our adjustments and reiterate through, we find that we actually overshot the minimum by a
+    large amount, and again we need to make another large adjustment, but in the opposite direction this time! We keep
+    doing this and our algorithm fails to cause the parameters to converge on the best values. This is known as
+    overshooting and it happens in real neural network applications!
+
+    We can correct this behavior by introducing a scaling factor, alpha, into our update code. This alpha will be a
+    scalar constant which will scale the partial derivatives so that we update our parameters by a smaller amount to
+    prevent overshooting. Our algorithm then becomes:
+
+        w = w - alpha*partial_derivative_w
+        b = b - alpha*partial_derivative_b
+
+    So what values do we pick for our alpha? Well, that depends and you'll need to do a bit of personal debugging to
+    determine a good alpha value. Sometimes a value of 1 is good, but other times you notice overshooting and will
+    adjust to, say, 0.001 or 1e-3. However, this can cause cause "undershooting" which at worst may find a local minimum
+    (remember, while our example for now is that simple bowl shape, your neural net will be represented by a multitude
+    of valleys and peaks), but not a global one, and at best will cause your net to learn slowly. The short answer is
+    that you'll need to monitor what your neural net is doing to determine how to adjust your alpha value.
+
+    Note that in modern machine learning frameworks (as we'll see later) usually there are optimizers that handle this
+    choice of alpha for you and can even do dynamic adjustments to alpha during training!
+
+    
 
 """
