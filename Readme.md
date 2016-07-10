@@ -265,7 +265,8 @@ our derivatives will be zero and we do nothing. We can get this behavior by usin
 By subtracting the partial derivative, we will ensure that we always increase a parameter if it is too low and
 vice versa. For zero values, the assignments reduce to w = w and b = b.
 
-    Note: Because the partial_derivative_* equations depend on the `w` and `b` values, the code would actually become:
+    Note: Because the partial_derivative_* equations depend on the `w` and `b` values,
+    the code would actually become:
 
         pd_w = SUM(x * (((x * w) + b) - y))/N
         pd_b = SUM(((x * w) + b) - y)/N
@@ -273,9 +274,9 @@ vice versa. For zero values, the assignments reduce to w = w and b = b.
         w = w - pd_w
         b = b - pd_b
 
-    Always perform a simultaneous update when doing gradient descent. If you update by calculating inline for each
-    parameter you will skew each subsequent parameter's update which will prevent your parameters from converging
-    at minimum-error values.
+    Always perform a simultaneous update when doing gradient descent. If you update by
+    calculating inline for each parameter you will skew each subsequent parameter's
+    update which will prevent your parameters from converging at minimum-error values.
 
 # Learning rate
 
